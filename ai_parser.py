@@ -1,4 +1,5 @@
 import fitz
+import shutil
 import json
 from typing import Dict, List, Any, Optional
 import openai
@@ -296,8 +297,13 @@ if __name__ == "__main__":
     DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
     #XML_DIR = os.path.join(DATA_DIR, "xml_files")
     PDF_CONVERTED_DIR = os.path.join(DATA_DIR, "pdf_converted")
-    os.makedirs(PDF_CONVERTED_DIR, exist_ok=True)
     OUTPUT_DIR = os.path.join(DATA_DIR, "output")
+
+    # Elimina le cartelle pdf_converted e output se esistono
+    for folder in [PDF_CONVERTED_DIR, OUTPUT_DIR]:
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
+        os.makedirs(folder, exist_ok=True)
     
     field_xml, path_pdf = estrai_pdf_from_xml("/Users/francescociteroni/Documents/Progetti/AI_parser/data/xml_files/IT02221101203_kBuOH.xml", PDF_CONVERTED_DIR)
     
@@ -317,8 +323,13 @@ if __name__ == "__main__":
     DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
     XML_DIR = os.path.join(DATA_DIR, "xml_files")
     PDF_CONVERTED_DIR = os.path.join(DATA_DIR, "pdf_converted")
-    os.makedirs(PDF_CONVERTED_DIR, exist_ok=True)
     OUTPUT_DIR = os.path.join(DATA_DIR, "output")
+
+    # Elimina le cartelle pdf_converted e output se esistono
+    for folder in [PDF_CONVERTED_DIR, OUTPUT_DIR]:
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
+        os.makedirs(folder, exist_ok=True)
 
     api_key = get_openai_api_key_from_env()
     parser = InvoiceParser(openai_api_key=api_key)
