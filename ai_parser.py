@@ -1,4 +1,5 @@
 import fitz
+import sys
 import shutil
 import json
 from typing import Dict, List, Any, Optional
@@ -16,6 +17,12 @@ def get_openai_api_key_from_env():
                 if line.startswith("OPENAI_API_KEY="):
                     return line.strip().split("=", 1)[1]
     return None
+
+def get_base_path():
+    if getattr(sys, 'frozen', False):
+        # Se eseguito da PyInstaller
+        return sys._MEIPASS
+    return os.path.dirname(os.path.abspath(__file__))
 
 class InvoiceParser:
     def __init__(self, openai_api_key: str = None):
@@ -320,7 +327,8 @@ if __name__ == "__main__":
 '''
 
 if __name__ == "__main__":
-    DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+    BASE_DIR = get_base_path()
+    DATA_DIR = os.path.join(BASE_DIR, "data")
     XML_DIR = os.path.join(DATA_DIR, "xml_files")
     PDF_CONVERTED_DIR = os.path.join(DATA_DIR, "pdf_converted")
     OUTPUT_DIR = os.path.join(DATA_DIR, "output")
