@@ -10,8 +10,9 @@ REQUIREMENTS = [
 ]
 
 def install_requirements():
-    print("Installazione delle librerie necessarie...")
-    subprocess.check_call([sys.executable, "-m", "pip", "install"] + REQUIREMENTS)
+    req_file = os.path.join(os.path.dirname(__file__), "requirements.txt")
+    print(f"Installazione delle librerie da {req_file} ...")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", req_file])
 
 def set_openai_api_key():
     api_key = input("Inserisci la tua OpenAI API Key: ").strip()
@@ -29,7 +30,7 @@ def build_executable():
         "pyinstaller",
         "--onefile",
         "--name", "ai_parser",
-        "ai_parser_final.py"
+        "ai_parser.py"
     ])
     print("Eseguibile generato nella cartella dist/.")
 
