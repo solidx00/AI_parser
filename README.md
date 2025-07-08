@@ -21,12 +21,7 @@
     cd AI_parser
     ```
 
-2. **Installa le dipendenze**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-3. **Configura la OpenAI API Key**
+2. **Configura l'eseguibile**
     ```bash
     python setup.py
     ```
@@ -35,9 +30,9 @@
 ---
 
 ## Struttura delle cartelle
-- data/ xml_files/ # XML delle fatture di input 
-- pdf_converted/ # PDF estratti dagli XML 
-- output/ # XML generati in output 
+- data/ xml_files/ -> XML delle fatture di input 
+- pdf_converted/ -> PDF estratti dagli XML 
+- output/ -> XML generati in output 
 
 ---
 
