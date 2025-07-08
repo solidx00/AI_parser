@@ -30,6 +30,10 @@ def build_executable():
         "pyinstaller",
         "--onefile",
         "--name", "ai_parser",
+        "--add-data", "data;data",
+        "--add-data", ".env;."
+        "--collect-binaries", "ssl",
+        "--collect-binaries", "cryptography",
         "ai_parser.py"
     ])
     print("Eseguibile generato nella cartella dist/.")
