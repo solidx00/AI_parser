@@ -77,12 +77,3 @@ def estrai_pdf_from_xml(xml_file: str, output_dir: str) -> dict:
     field["attachment"] = attachment
 
     return field, output_path
-
-if __name__ == "__main__":
-    xml_path = "/Users/francescociteroni/Documents/Progetti/AI_parser/data/xml_files/IT02221101203_kBuOH.xml"
-    output_dir = "/Users/francescociteroni/Documents/Progetti/AI_parser/output"
-    result, pdf_path = estrai_pdf_from_xml(xml_path, output_dir)
-    print("Sezioni estratte:")
-    for k, v in result.items():
-        print(f"{k}: {v[:500]}...")  # Mostra solo i primi 500 caratteri per brevità
-    print(f"PDF salvato in: {pdf_path}")
