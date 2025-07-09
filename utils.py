@@ -30,8 +30,14 @@ def estrai_pdf_from_xml(xml_file: str, output_dir: str) -> dict:
     match_generali = re.search(r"(<DatiGenerali>.*?</DatiGenerali>)", content, re.DOTALL)
     dati_generali = match_generali.group(1) if match_generali else ""
 
+    # Trova la sezione <DettaglioLinee>
     match_dettaglio_linee = re.search(r"(<DettaglioLinee>.*?</DettaglioLinee>)", content, re.DOTALL)
     dettaglio_linee = match_dettaglio_linee.group(1) if match_dettaglio_linee else ""
+
+    # Sostituisci i valori di <PrezzoUnitario> e <PrezzoTotale> con 0
+    if dettaglio_linee:
+        dettaglio_linee = re.sub(r"<PrezzoUnitario>.*?</PrezzoUnitario>", "<PrezzoUnitario>0</PrezzoUnitario>", dettaglio_linee)
+        dettaglio_linee = re.sub(r"<PrezzoTotale>.*?</PrezzoTotale>", "<PrezzoTotale>0</PrezzoTotale>", dettaglio_linee)
 
     # Estrai la parte da <DatiRiepilogo> fino alla fine
     match_riepilogo = re.search(r"(<DatiRiepilogo>.*?</DatiRiepilogo>)", content, re.DOTALL)
@@ -71,3 +77,12 @@ def estrai_pdf_from_xml(xml_file: str, output_dir: str) -> dict:
     field["attachment"] = attachment
 
     return field, output_path
+
+if __name__ == "__main__":
+    xml_path = "/Users/francescociteroni/Documents/Progetti/AI_parser/data/xml_files/IT02221101203_kBuOH.xml"
+    output_dir = "/Users/francescociteroni/Documents/Progetti/AI_parser/output"
+    result, pdf_path = estrai_pdf_from_xml(xml_path, output_dir)
+    print("Sezioni estratte:")
+    for k, v in result.items():
+        print(f"{k}: {v[:500]}...")  # Mostra solo i primi 500 caratteri per brevità
+    print(f"PDF salvato in: {pdf_path}")

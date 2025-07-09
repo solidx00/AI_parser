@@ -24,21 +24,6 @@ def set_openai_api_key():
         print("Nessuna API Key inserita. Procedura interrotta.")
         sys.exit(1)
 
-def build_executable():
-    print("Generazione dell'eseguibile...")
-    subprocess.check_call([
-        "pyinstaller",
-        "--onefile",
-        "--name", "ai_parser",
-        "--add-data", "data;data",
-        "--add-data", ".env;."
-        "--collect-binaries", "ssl",
-        "--collect-binaries", "cryptography",
-        "ai_parser.py"
-    ])
-    print("Eseguibile generato nella cartella dist/.")
-
 if __name__ == "__main__":
     install_requirements()
     set_openai_api_key()
-    build_executable()
