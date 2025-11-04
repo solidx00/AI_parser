@@ -2,63 +2,97 @@
 
 ## Descrizione
 
-**AI_parser** è uno strumento Python che estrae dati strutturati da fatture energetiche in PDF e genera file XML conformi al formato della Fattura Elettronica italiana. Utilizza l’intelligenza artificiale (OpenAI GPT) per l’estrazione dei dati e supporta l’elaborazione batch di più fatture.
-
----
+Strumento Python per l’estrazione di dati da fatture energetiche e la generazione di XML conformi alla Fattura Elettronica. Supporta:
+- Estrazione da PDF singolo tramite AI (`ai_parser.py`)
+- Estrazione multi-fattura da PDF con più POD/PDR per file (`ai_parser_extended.py`)
 
 ## Requisiti
+- Python 3.10+
+- Chiave OpenAI (`OPENAI_API_KEY`)
 
-- Python 3.8 o superiore
-- OpenAI API Key
+## Setup ambiente
+Consigliato utilizzare il virtualenv incluso:
+```bash
+cd /Users/ggs/Documents/Projects/AI_parser
+./myenv/bin/python -V
+```
 
----
+Configura la chiave OpenAI (uno dei due metodi):
+- File .env nel root del progetto (consigliato):
+  ```
+  OPENAI_API_KEY=la_tua_chiave_segreta
+  ```
+- Variabile d’ambiente nella shell corrente:
+  ```bash
+  export OPENAI_API_KEY="la_tua_chiave_segreta"
+  ```
 
-## Installazione
+Il caricamento della chiave è gestito da `get_openai_api_key_from_env()` che legge: variabile d’ambiente, `.env` accanto agli script o `.env` nella CWD.
 
-1. **Clona il repository**
-    ```bash
-    git clone https://github.com/tuo-utente/AI_parser.git
-    cd AI_parser
-    ```
+## Struttura cartelle
+- `data/xml_files/`: XML di input per il parser base (`ai_parser.py`)
+- `data/pdf_converted/`: PDF estratti dagli XML (parser base)
+- `data/output/`: XML generati (parser base)
 
-2. **Configura l'eseguibile**
-    ```bash
-    python setup.py
-    ```
-    Segui le istruzioni per inserire la tua API Key.
+- `data/xml_multi_pod/`: XML di input contenenti allegati PDF con più fatture/POD
+- `data/xml_multi_pod/output/`: output dell’esteso (per ogni XML, una sottocartella con PDF e XML per-POD)
 
----
 
-## Struttura delle cartelle
-- data/ xml_files/ -> XML delle fatture di input 
-- pdf_converted/ -> PDF estratti dagli XML 
-- output/ -> XML generati in output 
-
----
 
 ## Utilizzo
 
-### Esecuzione da sorgente
-
+### Parser base (un PDF → un XML)
+Elabora tutti gli XML in `data/xml_files/`, estrae il PDF allegato e genera l’XML corrispondente.
 ```bash
-python ai_parser.py
+./myenv/bin/python ai_parser.py
 ```
 
-### Generazione dell’eseguibile standalone
+### Parser esteso multi-POD (`ai_parser_extended.py`)
+Elabora XML in `data/xml_multi_pod/`, estrae il PDF allegato e per ogni POD/PDR rilevato nel PDF genera un XML.
 
+Esecuzione completa (tutti gli XML):
 ```bash
-python setup.py
+./myenv/bin/python ai_parser_extended.py
 ```
 
-L’eseguibile verrà creato nella cartella dist.
+Solo primo XML (test rapido) e solo primo POD (minimizza costi API):
+```bash
+./myenv/bin/python ai_parser_extended.py --test-one --first-pod-only
+```
+
+Pulizia opzionale prima di eseguire (solo se supportata dalla versione attuale del main):
+```bash
+./myenv/bin/python ai_parser_extended.py --clean
+```
+
+Output esteso:
+- PDF estratto rinominato e salvato in `data/xml_multi_pod/output/<nome_xml>/<nome_pdf>_<nome_xml>.pdf`
+- XML per-POD in `data/xml_multi_pod/output/<nome_xml>/<POD|PDR>_<codice>_converted.xml`
 
 ## Funzionalità principali
-- Estrazione automatica dei dati da PDF di fatture energetiche tramite AI
-- Conversione in XML conforme alla Fattura Elettronica
-- Elaborazione batch di più file XML
-- Gestione allegati PDF contenuti negli XML
+- Estrazione AI dei campi fattura: intestazione, periodo, servizi di vendita, servizi di rete, imposte, nota IVA
+- Ricostruzione XML conforme usando i blocchi originali (header, riepilogo, pagamento, allegati)
+- Multi-POD: raggruppamento delle sezioni del PDF per POD/PDR e generazione di XML separati
+- Flag di test per ridurre l’uso di API (solo primo XML e/o primo POD)
 
-## Personalizzazione
-- Inserisci i tuoi file XML nella cartella xml_files.
-- I PDF estratti verranno salvati in pdf_converted.
-- Gli XML generati saranno disponibili in output.
+## Note utili
+- Il parser base salta le prime 2 pagine del PDF durante la lettura testo (impostazione conservata nell’esteso dove rilevante)
+- Se non viene rilevato un POD/PDR, la sezione viene ignorata per evitare output errati
+- Log di debug possono essere reindirizzati su file: `./myenv/bin/python ai_parser_extended.py --test-one > run.log 2>&1`
+
+## Build eseguibile (opzionale)
+Se necessario, consulta `setup.py`:
+```bash
+./myenv/bin/python setup.py
+```
+L’eseguibile verrà generato in `dist/`.
+
+Il comando sopra installerà i requisiti, chiederà la tua `OPENAI_API_KEY` e costruirà due eseguibili:
+- `dist/ai_parser` (parser base)
+- `dist/ai_parser_extended` (parser multi-POD)
+
+Una volta creati, puoi avviarli con doppio click (macOS potrebbe richiedere permessi) oppure da terminale:
+```bash
+./dist/ai_parser
+./dist/ai_parser_extended
+```
